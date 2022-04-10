@@ -74,8 +74,8 @@ def get_product(id):
   return product_schema.jsonify(product), 200
 
 # Update a Product
-@app.route('/product/<id>', methods=['PUT'])
-def update_product(id):
+@app.route('/product/<name>', methods=['PUT'])
+def update_product(name):
   product = Product.query.get(id)
 
   name = request.json['name']
@@ -85,6 +85,10 @@ def update_product(id):
   product.name = name
   product.price = price
   product.qty = qty
+
+  existing_name = Product.query.filter_by(name=name).first()
+  if not existing_name:
+      return {"message": "This apparel doesn't exist. Please recheck apparel name."}, 403  
 
   db.session.commit()
 
