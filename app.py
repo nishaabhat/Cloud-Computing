@@ -76,7 +76,7 @@ def get_product(id):
 # Update a Product
 @app.route('/product/<name>', methods=['PUT'])
 def update_product(name):
-  product = Product.query.get(id)
+  product = Product.query.get(name)
 
   name = request.json['name']
   price = request.json['price']
