@@ -86,8 +86,7 @@ def update_product(name):
   product.price = price
   product.qty = qty
 
-  existing_name = Product.query.filter_by(name=name).first()
-  if not existing_name:
+  if product is None:
       return {"message": "This apparel doesn't exist. Please recheck apparel name."}, 403  
 
   db.session.commit()
