@@ -128,10 +128,5 @@ class AdminModel(db.Model):
 
 # Run Server
 if __name__ == '__main__':
-        if app.config['DEBUG']:
-            @app.before_first_request
-            def create_tables():
-                AdminModel()
-                db.create_all()
-                AdminModel().save_to_db()
-        app.run(debug=True)
+    db.create_all()
+    app.run(debug=True)
