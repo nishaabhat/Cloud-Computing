@@ -3,6 +3,10 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow 
 import os
 from flask_restful import Api
+import urllib.request, urllib.response
+import datetime
+import json, io
+
 # Init app
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -92,6 +96,13 @@ def delete_product(id):
 
   return product_schema.jsonify(product)
 
+@app.route('/getholidays/', methods=['GET'])
+def getHolidays():
+    # Retreive information on public holiday's from the external api
+    url = 'https://date.nager.at/api/v2/publicholidays/' + str((datetime.datetime.now()).year) + '/GB'
+    with urllib.request.urlopen(url) as response:
+        return json.JSONEncoder().encode(json.load(response)), 200
+
 errors = {
     'UserAlreadyExistsError': { 
         'message': 'A user with that username already exists.',
@@ -104,7 +115,7 @@ errors = {
         'extra': 'Any extra information you want.',
     },
     'ResourceBaseError': {
-        'message': 'Internal server error',
+        'message': 'Recheck the details again. Name of the item must be unique.',
         'status': 500,
         
     },
