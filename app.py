@@ -14,6 +14,11 @@ db = SQLAlchemy(app)
 # Init ma
 ma = Marshmallow(app)
 
+
+@app.route('/')
+def index():
+  return 'Welcome', 200
+
 # Product Class/Model
 class Product(db.Model):
   id = db.Column(db.Integer, primary_key=True)
@@ -34,8 +39,8 @@ class ProductSchema(ma.Schema):
     fields = ('id', 'name', 'description', 'price', 'qty')
 
 # Init schema
-product_schema = ProductSchema(strict=True)
-products_schema = ProductSchema(many=True, strict=True)
+product_schema = ProductSchema()
+products_schema = ProductSchema(many=True)
 
 # Create a Product
 @app.route('/product', methods=['POST'])
