@@ -2,22 +2,19 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy 
 from flask_marshmallow import Marshmallow 
 import os
+import json, io
+import urllib.request, urllib.response
 
 # Init app
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 # Database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Password123@database-1.cmdfiwgzwnsx.us-east-1.rds.amazonaws.com:5432/postgres'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Init db
 db = SQLAlchemy(app)
 # Init ma
 ma = Marshmallow(app)
-
-
-@app.route('/')
-def index():
-  return 'Welcome', 200
 
 # Product Class/Model
 class Product(db.Model):
@@ -50,6 +47,10 @@ def add_product():
   price = request.json['price']
   qty = request.json['qty']
 
+  existing_product = Product.query.filter_by(name=name).first()
+  if existing_product:
+    return {"message": "Product already exists"}, 403
+
   new_product = Product(name, description, price, qty)
 
   db.session.add(new_product)
@@ -62,7 +63,7 @@ def add_product():
 def get_products():
   all_products = Product.query.all()
   result = products_schema.dump(all_products)
-  return jsonify(result.data)
+  return jsonify(result)
 
 # Get Single Products
 @app.route('/product/<id>', methods=['GET'])
@@ -74,30 +75,40 @@ def get_product(id):
 @app.route('/product/<id>', methods=['PUT'])
 def update_product(id):
   product = Product.query.get(id)
-
-  name = request.json['name']
-  description = request.json['description']
-  price = request.json['price']
-  qty = request.json['qty']
-
-  product.name = name
-  product.description = description
-  product.price = price
-  product.qty = qty
-
-  db.session.commit()
-
-  return product_schema.jsonify(product)
+  if product == None:
+    return {"message": "Product doesn't exist exists"}, 403
+  else:
+    name = request.json['name']
+    description = request.json['description']
+    price = request.json['price']
+    qty = request.json['qty']
+    product.name = name
+    product.description = description
+    product.price = price
+    product.qty = qty
+    db.session.commit()
+    return product_schema.jsonify(product)
 
 # Delete Product
 @app.route('/product/<id>', methods=['DELETE'])
 def delete_product(id):
   product = Product.query.get(id)
-  db.session.delete(product)
-  db.session.commit()
+  if product == None:
+    return {"message": "Product doesn't exist exists"}, 403
+  else:
+    db.session.delete(product)
+    db.session.commit()
 
-  return product_schema.jsonify(product)
+    return product_schema.jsonify(product)
+
+@app.route('/COVIDAnnouncements/', methods=['GET'])
+def getAnnouncements():
+    # 
+    url = 'https://api.coronavirus.data.gov.uk/generic/announcements'
+    with urllib.request.urlopen(url) as response:
+        return json.JSONEncoder().encode(json.load(response)), 200
 
 # Run Server
 if __name__ == '__main__':
+  db.create_all()
   app.run(debug=True)
