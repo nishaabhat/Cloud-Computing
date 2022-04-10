@@ -96,9 +96,9 @@ def delete_product(id):
 
   return product_schema.jsonify(product)
 
-@app.route('/getholidays/', methods=['GET'])
-def getHolidays():
-    # Retreive information on public holiday's from the external api
+@app.route('/COVIDAnnouncements/', methods=['GET'])
+def getAnnouncements():
+    # 
     url = 'https://api.coronavirus.data.gov.uk/generic/announcements'
     with urllib.request.urlopen(url) as response:
         return json.JSONEncoder().encode(json.load(response)), 200
@@ -114,7 +114,7 @@ errors = {
         'status': 410,
         'extra': 'Any extra information you want.',
     },
-    'ResourceBaseError': {
+    'Internal Server Error': {
         'message': 'Recheck the details again. Name of the item must be unique.',
         'status': 500,
         
