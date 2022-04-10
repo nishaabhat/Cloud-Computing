@@ -99,7 +99,7 @@ def delete_product(id):
 @app.route('/getholidays/', methods=['GET'])
 def getHolidays():
     # Retreive information on public holiday's from the external api
-    url = 'https://api.aakhilv.me/' + str((datetime.datetime.now()).year) + '/GB'
+    url = 'https://excuser.herokuapp.com/' + str((datetime.datetime.now()).year) + '/GB'
     with urllib.request.urlopen(url) as response:
         return json.JSONEncoder().encode(json.load(response)), 200
 
