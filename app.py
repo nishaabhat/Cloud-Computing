@@ -68,27 +68,25 @@ def get_products():
   return jsonify(result), 200
 
 # Get Single Products
-@app.route('/product/<id>', methods=['GET'])
-def get_product(id):
-  product = Product.query.get(id)
+@app.route('/product/<name>', methods=['GET'])
+def get_product(name):
+  product = Product.query.get(name)
+  if product is None:
+      return {"message": "This apparel doesn't exist. Please recheck apparel name."}, 403  
   return product_schema.jsonify(product), 200
 
 # Update a Product
 @app.route('/product/<name>', methods=['PUT'])
 def update_product(name):
   product = Product.query.get(name)
-
   name = request.json['name']
   price = request.json['price']
   qty = request.json['qty']
-
   product.name = name
   product.price = price
   product.qty = qty
-
   if product is None:
-      return {"message": "This apparel doesn't exist. Please recheck apparel name."}, 403  
-
+    return {"message": "This apparel doesn't exist. Please recheck apparel name."}, 403  
   db.session.commit()
 
   return product_schema.jsonify(product), 200
