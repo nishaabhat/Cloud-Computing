@@ -10,20 +10,26 @@ import json, io
 # Init app
 app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
+
 # Database
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
+db_url = os.environ.get('DATABASE_URL')                                   # For Heroku, comment for local execution 
+app.config['SQLALCHEMY_DATABASE_URI'] = db_url.replace("://", "ql://", 1) # For Heroku, comment for local execution
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'             # For Local, comment for Heroku execution  
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
 # Init db
 db = SQLAlchemy(app)
 # Init ma
 ma = Marshmallow(app)
 
+
 @app.route('/')
 def index():
-  return 'Welcome to clothing app'
+  return 'Welcome to clothing app', 200
 
 # Product Class/Model
 class Product(db.Model):
+  __tablename__ = 'apparel'
   id = db.Column(db.Integer, primary_key=True)
   name = db.Column(db.String(100), unique=True)
   price = db.Column(db.Float)
