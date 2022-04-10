@@ -99,7 +99,7 @@ def delete_product(id):
 @app.route('/getholidays/', methods=['GET'])
 def getHolidays():
     # Retreive information on public holiday's from the external api
-    url = 'https://arbeitnow.com/api/job-board-api'
+    url = 'https://api.coronavirus.data.gov.uk/generic/announcements'
     with urllib.request.urlopen(url) as response:
         return json.JSONEncoder().encode(json.load(response)), 200
 
