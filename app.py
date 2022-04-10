@@ -17,6 +17,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = db_url.replace("://", "ql://", 1) # For 
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'             # For Local, comment for Heroku execution  
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+
+
 # Init db
 db = SQLAlchemy(app)
 # Init ma
@@ -92,7 +94,7 @@ def update_product(name):
   product.price = price
   product.qty = qty
   if product is None:
-    return {"message": "This apparel doesn't exist. Please recheck apparel name."}, 403  
+      return {"message": "This apparel doesn't exist. Please recheck apparel name."}, 403  
   db.session.commit()
 
   return product_schema.jsonify(product), 200
@@ -113,7 +115,23 @@ def getAnnouncements():
     with urllib.request.urlopen(url) as response:
         return json.JSONEncoder().encode(json.load(response)), 200
 
+class AdminModel(db.Model):
+    __tablename__ = 'admin'
+
+    # Declare table columns
+    adminid  = db.Column(db.String(40), primary_key=True)
+
+    # Constructor for table instance
+    def __init__(self):
+        self.adminid = "34fce8e54af2a418da63ce05b265cc8ea98cc1ef"
+        self.save_to_db()
 
 # Run Server
 if __name__ == '__main__':
-  app.run(debug=True)
+        if app.config['DEBUG']:
+            @app.before_first_request
+            def create_tables():
+                AdminModel()
+                db.create_all()
+                AdminModel().save_to_db()
+        app.run(debug=True)
