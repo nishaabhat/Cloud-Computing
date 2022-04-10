@@ -49,8 +49,11 @@ def add_product():
   name = request.json['name']
   price = request.json['price']
   qty = request.json['qty']
-
   new_product = Product(name, price, qty)
+  
+  existing_name = Product.query.filter_by(name=name).first()
+  if existing_name:
+      return {"message": "This apparel already exists"}, 403
 
   db.session.add(new_product)
   db.session.commit()
@@ -62,13 +65,13 @@ def add_product():
 def get_products():
   all_products = Product.query.all()
   result = products_schema.dump(all_products)
-  return jsonify(result)
+  return jsonify(result), 200
 
 # Get Single Products
 @app.route('/product/<id>', methods=['GET'])
 def get_product(id):
   product = Product.query.get(id)
-  return product_schema.jsonify(product)
+  return product_schema.jsonify(product), 200
 
 # Update a Product
 @app.route('/product/<id>', methods=['PUT'])
@@ -85,7 +88,7 @@ def update_product(id):
 
   db.session.commit()
 
-  return product_schema.jsonify(product)
+  return product_schema.jsonify(product), 200
 
 # Delete Product
 @app.route('/product/<id>', methods=['DELETE'])
@@ -94,7 +97,7 @@ def delete_product(id):
   db.session.delete(product)
   db.session.commit()
 
-  return product_schema.jsonify(product)
+  return product_schema.jsonify(product), 200
 
 @app.route('/COVIDAnnouncements/', methods=['GET'])
 def getAnnouncements():
@@ -103,31 +106,6 @@ def getAnnouncements():
     with urllib.request.urlopen(url) as response:
         return json.JSONEncoder().encode(json.load(response)), 200
 
-errors = {
-    'UserAlreadyExistsError': { 
-        'message': 'A user with that username already exists.',
-        'status': 409,
-
-    },
-    'ResourceDoesNotExist': {
-        'message': 'A resource with that ID no longer exists.',
-        'status': 410,
-        'extra': 'Any extra information you want.',
-    },
-    'Internal Server Error': {
-        'message': 'Recheck the details again. Name of the item must be unique.',
-        'status': 500,
-        
-    },
-    'BadRequestError': {
-        'message': 'Missing required parameters.',
-        'status': 400,
-    },
-    
-
-}  
-
-api = Api(app, errors=errors, catch_all_404s=True)
 
 # Run Server
 if __name__ == '__main__':
