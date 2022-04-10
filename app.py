@@ -12,11 +12,14 @@ app = Flask(__name__)
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 # Database
-db_url = os.environ.get('DATABASE_URL')                                   # For Heroku, comment for local execution 
-app.config['SQLALCHEMY_DATABASE_URI'] = db_url.replace("://", "ql://", 1) # For Heroku, comment for local execution
+#db_url = os.environ.get('DATABASE_URL')                                   # For Heroku, comment for local execution 
+#app.config['SQLALCHEMY_DATABASE_URI'] = db_url.replace("://", "ql://", 1) # For Heroku, comment for local execution
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///data.db'             # For Local, comment for Heroku execution  
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+#app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+# Database
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 
 # Init db
@@ -128,5 +131,4 @@ class AdminModel(db.Model):
 
 # Run Server
 if __name__ == '__main__':
-    db.create_all()
     app.run(debug=True)
