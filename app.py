@@ -148,7 +148,7 @@ def get_product(id):
     return product_schema.jsonify(product), 200
 
 # Update a Product
-@app.route('/product/<id>', methods=['PUT'])
+@app.route('/updateproduct/<id>', methods=['PUT'])
 def update_product(id):
   product = Product.query.get(id)
   if product == None:
@@ -166,7 +166,7 @@ def update_product(id):
     return product_schema.jsonify(product), 200
 
 # Delete Product
-@app.route('/product/<id>', methods=['DELETE'])
+@app.route('/deleteproduct/<id>', methods=['DELETE'])
 def delete_product(id):
   product = Product.query.get(id)
   if product == None:
@@ -177,7 +177,7 @@ def delete_product(id):
 
     return product_schema.jsonify(product)
 
-@app.route('/COVIDAnnouncements/', methods=['GET'])
+@app.route('/COVIDAnnouncements', methods=['GET'])
 def getAnnouncements():
     # 
     url = 'https://api.coronavirus.data.gov.uk/generic/announcements'
