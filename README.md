@@ -69,8 +69,6 @@ The application has following main features:
 
 🔵  /COVIDAnnouncements
 
-🔵  /delete-from-list
-
 🔵  /getusers
 
 🔵  /adduser
