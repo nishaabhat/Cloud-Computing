@@ -23,7 +23,8 @@ We have created a Cloud based Flask application RESTful architecture. to display
      ▶️ AWS Cloud 
      
 🔵 Serving the application over https
- 
+
+    ▶️ https://cloudload-834980351.us-east-1.elb.amazonaws.com 
 
 🔵 Interaction with external REST services
 
