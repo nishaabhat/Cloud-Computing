@@ -24,8 +24,6 @@ We have created a Cloud based Flask application RESTful architecture. to display
      
 🔵 Serving the application over https
 
-    ▶️ https://cloudload-834980351.us-east-1.elb.amazonaws.com 
-
 🔵 Interaction with external REST services
 
      ▶️ Displaying Covid Announcements using external API
@@ -49,32 +47,35 @@ The application has following main features:
  
 
 ## 👉 Application URL
-
+      
 
 
 ## 👉 Application URL on AWS
-
+     https://cloudload-834980351.us-east-1.elb.amazonaws.com 
 
 
 ## 👉 Application endpoints
 
 
-🔵  /browse
+🔵  /addproduct
 
-🔵  /register
+🔵  /getproduct
 
-🔵  /login
+🔵  /getproduct/product_id
 
-🔵  /logout
+🔵  /updateproduct/product_id
 
-🔵  /add-to-list
+🔵  /deleteproduct/product_id
+
+🔵  /COVIDAnnouncements
 
 🔵  /delete-from-list
 
-🔵  /view-list
+🔵  /getusers
 
-🔵  /delete-user
+🔵  /adduser
 
+🔵  /authenticate
 
 
 ## 👉 YouTube presentation link 📺
