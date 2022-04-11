@@ -4,17 +4,84 @@ from flask_marshmallow import Marshmallow
 import os
 import json, io
 import urllib.request, urllib.response
+import hashlib
 
 # Init app
 app = Flask(__name__)
+app.secret_key = 'CC-GP12'
 basedir = os.path.abspath(os.path.dirname(__file__))
 # Database
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Password123@database-1.cmdfiwgzwnsx.us-east-1.rds.amazonaws.com:5432/postgres'
+#app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'db.sqlite')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 # Init db
 db = SQLAlchemy(app)
 # Init ma
 ma = Marshmallow(app)
+
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), unique=True)
+    email = db.Column(db.String(80))
+    userpassword = db.Column(db.String())
+
+    def __init__(self, username, email, userpassword):
+      self.username = username
+      self.email = email
+      self.userpassword = userpassword
+ 
+# User Schema
+class UserSchema(ma.Schema):
+  class Meta:
+    fields = ('username', 'email', 'userpassword')
+
+# Init schema
+user_schema = UserSchema()
+users_schema = UserSchema(many=True)
+
+@app.route('/adduser', methods=['POST'])
+def add_user():
+  username = request.json['username']
+  email = request.json['email']
+  userpassword = request.json['userpassword']
+  existing_user = User.query.filter_by(username=username).first()
+  if existing_user:
+    return {"message": "User already exists"}, 403
+
+  o_hash = hashlib.new('ripemd160')
+  o_hash.update(userpassword.encode("utf-8"))
+  userpassword = o_hash.hexdigest() 
+  new_user = User(username, email, userpassword)
+
+  db.session.add(new_user)
+  db.session.commit()
+
+  return user_schema.jsonify(new_user)
+
+@app.route('/getuser', methods=['GET'])
+def get_user():
+  all_users = User.query.all()
+  result_users = users_schema.dump(all_users)
+  return jsonify(result_users)
+
+@app.route('/authenticate', methods = ['POST'])
+def authenticate():
+  username = request.json['username']
+  userpassword = request.json['userpassword']
+
+  o_hash = hashlib.new('ripemd160')
+  o_hash.update(userpassword.encode("utf-8"))
+  fetchpassword = o_hash.hexdigest()
+
+  user = User.query.filter_by(username = username).first()
+
+
+  if user is not None and user.userpassword == fetchpassword:
+    text = 'Password matches. User '+username+' authenticated.'
+  else:
+    text = 'Password mismatch!!'
+  return text
 
 # Product Class/Model
 class Product(db.Model):
@@ -111,4 +178,4 @@ def getAnnouncements():
 # Run Server
 if __name__ == '__main__':
   db.create_all()
-  app.run(debug=True)
+  app.run(debug=True, host='0.0.0.0')
